@@ -1,0 +1,60 @@
+/*
+    Common functions        by Solohin Sergey
+    
+    History:
+    first write 06.03.2004
+
+    TODO:
+
+*/
+
+///////////////////////////////////////////////////////////
+// Name: selPoints                                       //
+// Desc: Convert polygons selection to points selection  //
+///////////////////////////////////////////////////////////
+selPoints
+{
+    var pnts, pntCount=0;
+    var total[6];    
+
+    //-- work with selection
+    selmode(USER);
+
+    //-- begin work with mesh
+    editbegin(); 
+    //-- get count of selected polygons
+    total = polycount();
+
+    //-- set data of point array which we want to select
+    for (i=1; i<=total[1]; ++i) { 
+        //-- polygon info        
+        pcount = polypointcount( polygons[i] );
+        parray = polyinfo( polygons[i] );
+        
+        //-- for all points in polygon
+        for (j=1; j<=pcount; ++j) {
+            //-- check of this point already exist in array
+            Exist = 0;
+            for (k=1; k<=pntCount; ++k)
+                if (pnts[k] == parray[j+1]) {
+                    Exist = 1;
+                    break;
+                }
+
+            //-- add point ID to array
+            pnts[ ++pntCount ] = parray[j+1]    if (!Exist);
+                
+        }
+    }
+    
+    //-- finish edit
+    editend();
+
+    //-- clear points selection
+    selmode(USER);
+    selpoint(CLEAR);
+    
+    //-- select points according our array
+    selpoint(SET, POINTID, pnts); 
+}
+
